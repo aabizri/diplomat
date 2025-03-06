@@ -11,6 +11,7 @@ mod demo_gen;
 mod js;
 mod kotlin;
 mod nanobind;
+mod csharp;
 
 use colored::*;
 use config::toml_value_from_str;
@@ -109,6 +110,7 @@ pub fn gen(
             demo_gen::run(entry, &tcx, docs_url_gen, config.clone())
         }
         "kotlin" => kotlin::run(&tcx, config.clone(), docs_url_gen),
+        "csharp" => csharp::run(&tcx),
         o => panic!("Unknown target: {}", o),
     };
 

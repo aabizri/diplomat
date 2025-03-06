@@ -97,7 +97,18 @@ impl Docs {
     pub fn rust_links(&self) -> &[RustLink] {
         &self.1
     }
+
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
 }
+
+impl AsRef<str> for Docs {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[non_exhaustive]
