@@ -8,6 +8,7 @@ mod dart;
 mod demo_gen;
 mod js;
 mod kotlin;
+mod csharp;
 
 use colored::*;
 use core::mem;
@@ -99,6 +100,7 @@ pub fn gen(
             demo_gen::run(entry, &tcx, docs_url_gen, conf)
         }
         "kotlin" => kotlin::run(&tcx, library_config, docs_url_gen),
+        "csharp" => csharp::run(&tcx),
         o => panic!("Unknown target: {}", o),
     };
 
