@@ -1,0 +1,38 @@
+{#
+    Native Function
+    This should be within a class (or partial class) with the dll name in __DllName
+#}
+
+{#{% if let Some(docs) = method.docs() %}
+    {% include "docs_snippet.cs.jinja" %}
+{% endif %}#}
+#if NET6_0_OR_GREATER
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+#endif
+#if NET7_0_OR_GREATER
+    [LibraryImport(
+        __DllName,
+        EntryPoint = "{{method.inner.abi_name}}"
+    )]
+    public static partial
+#else
+    [DllImport(
+        __DllName,
+        EntryPoint = "{{method.inner.abi_name}}",
+#if !NET6_0_OR_GREATER
+        CallingConvention = CallingConvention.Cdecl,
+#endif
+        ExactSpelling = true
+    )]
+    public static extern
+#endif
+{{method.cs_type()}} {{method.cs_name()}}(
+    {#-{% if let Some(param_self) = method.param_self %}
+    {{ todo!() }},
+    {% endif %}#}
+    {%- for argument in method.params() %}
+    {%- let cs_type = argument.cs_type() %}
+    {%- let name = argument.cs_name() %}
+    {{ cs_type }} {{ name }},
+    {%- endfor %}
+)

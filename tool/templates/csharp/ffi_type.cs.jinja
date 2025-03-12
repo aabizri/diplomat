@@ -1,0 +1,23 @@
+using System.Runtime.InteropServices;
+
+namespace {{library_namespace}}.FFI;
+
+{% if ffi_function.len() > 0 %}
+internal static unsafe partial class Library
+{
+    {% for ffi_function in ffi_functions %}
+        {% include "ffi_function_declaration.cs.jinja" %}
+    {% endfor %}
+}
+{% endif %}
+
+{% if let Some(docs) = ffi_type.docs %}
+    {% include docs_snippet.cs.jinja %}
+{% endif %}
+{% match ffi_type.inner() %}
+    {% when Struct with (ffi_struct) %}
+        {% include "ffi_struct.cs.jinja"}
+    {% when Enum with (ffi_enum) %}
+        {% include "ffi_enum.cs.jinja"}
+    {% else %}
+{% endmatch %}

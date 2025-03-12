@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 
 namespace SomeLib;
 
-class MyOpaque {
+public class MyOpaque {
     unsafe private void* ffi;
 
     public MyOpaque() {

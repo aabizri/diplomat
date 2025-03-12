@@ -4,11 +4,11 @@
 // Backends
 pub mod c;
 mod cpp;
+mod csharp;
 mod dart;
 mod demo_gen;
 mod js;
 mod kotlin;
-mod csharp;
 
 use colored::*;
 use core::mem;
@@ -58,6 +58,7 @@ pub fn gen(
             demo_gen::attr_support()
         }
         "kotlin" => kotlin::attr_support(),
+        "csharp" => csharp::attr_support(),
         o => panic!("Unknown target: {}", o),
     };
 
@@ -100,7 +101,7 @@ pub fn gen(
             demo_gen::run(entry, &tcx, docs_url_gen, conf)
         }
         "kotlin" => kotlin::run(&tcx, library_config, docs_url_gen),
-        "csharp" => csharp::run(&tcx),
+        "csharp" => csharp::run(&tcx, docs_url_gen),
         o => panic!("Unknown target: {}", o),
     };
 

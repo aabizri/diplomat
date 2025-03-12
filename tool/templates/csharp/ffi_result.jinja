@@ -1,0 +1,38 @@
+{#
+    Older .NET runtime versions do not support "blittable generics".
+    Thus, we rely on custom structs which have a clear translation to DiplomatRuntime::DiplomatResult<T,E>
+#}
+
+{% if let Some(docs) = docs %}
+    {% include "docs_snippet.cs.jinja" %}
+{% endif %}
+#if NET6_0_OR_GREATER
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+#endif
+#if NET7_0_OR_GREATER
+    [LibraryImport(
+        __DllName,
+        EntryPoint = "{{method.abi_name}}"
+    )]
+    public static partial
+#else
+    [DllImport(
+        __DllName,
+        EntryPoint = "{{method.abi_name}}",
+#if !NET6_0_OR_GREATER
+        CallingConvention = CallingConvention.Cdecl,
+#endif
+        ExactSpelling = true
+    )]
+    public static extern
+#endif
+{{return_type}} {{method.dotnet_name}}(
+    {% if let Some(param_self) = method.param_self %}
+    {{ todo!() }},
+    {% endif %}
+    {% for argument in method.inner.params %}
+    {% let cs_type = formatter.fmt_function_parameter_type(&argument.ty); %}
+    {% let name = formatter.fmt_function_parameter(&argument.name); %}
+    {{ cs_type }} {{ cs_name }},
+    {% endfor %}
+)

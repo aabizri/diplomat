@@ -109,7 +109,6 @@ impl AsRef<str> for Docs {
     }
 }
 
-
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[non_exhaustive]
 pub enum RustLinkDisplay {

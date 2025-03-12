@@ -158,6 +158,7 @@ final class _ResultCyclicStructAFfiVoid extends ffi.Struct {
   }
 }
 
+
 final class _ResultDoubleVoidUnion extends ffi.Union {
   @ffi.Double()
   external double ok;
@@ -184,6 +185,7 @@ final class _ResultDoubleVoid extends ffi.Struct {
     return struct;
   }
 }
+
 
 final class _ResultInt32OpaqueUnion extends ffi.Union {
   @ffi.Int32()
@@ -214,6 +216,7 @@ final class _ResultInt32Opaque extends ffi.Struct {
   }
 }
 
+
 final class _ResultInt32VoidUnion extends ffi.Union {
   @ffi.Int32()
   external int ok;
@@ -240,6 +243,7 @@ final class _ResultInt32Void extends ffi.Struct {
     return struct;
   }
 }
+
 
 final class _ResultIntPtrVoidUnion extends ffi.Union {
   @ffi.IntPtr()
@@ -268,6 +272,7 @@ final class _ResultIntPtrVoid extends ffi.Struct {
   }
 }
 
+
 final class _ResultMyStructFfiVoidUnion extends ffi.Union {
   external _MyStructFfi ok;
 
@@ -293,6 +298,7 @@ final class _ResultMyStructFfiVoid extends ffi.Struct {
     return struct;
   }
 }
+
 
 final class _ResultOpaqueErrorStructFfiUnion extends ffi.Union {
   external ffi.Pointer<ffi.Opaque> ok;
@@ -321,6 +327,7 @@ final class _ResultOpaqueErrorStructFfi extends ffi.Struct {
     return struct;
   }
 }
+
 
 final class _ResultOpaqueInt32Union extends ffi.Union {
   external ffi.Pointer<ffi.Opaque> ok;
@@ -351,6 +358,7 @@ final class _ResultOpaqueInt32 extends ffi.Struct {
   }
 }
 
+
 final class _ResultOpaqueVoidUnion extends ffi.Union {
   external ffi.Pointer<ffi.Opaque> ok;
 
@@ -376,6 +384,7 @@ final class _ResultOpaqueVoid extends ffi.Struct {
     return struct;
   }
 }
+
 
 final class _ResultOptionInputStructFfiVoidUnion extends ffi.Union {
   external _OptionInputStructFfi ok;
@@ -403,6 +412,7 @@ final class _ResultOptionInputStructFfiVoid extends ffi.Struct {
   }
 }
 
+
 final class _ResultOptionStructFfiVoidUnion extends ffi.Union {
   external _OptionStructFfi ok;
 
@@ -428,6 +438,7 @@ final class _ResultOptionStructFfiVoid extends ffi.Struct {
     return struct;
   }
 }
+
 
 final class _ResultSizeVoidUnion extends ffi.Union {
   @ffi.Size()
@@ -456,6 +467,7 @@ final class _ResultSizeVoid extends ffi.Struct {
   }
 }
 
+
 final class _ResultSliceUtf8VoidUnion extends ffi.Union {
   external _SliceUtf8 ok;
 
@@ -481,6 +493,7 @@ final class _ResultSliceUtf8Void extends ffi.Struct {
     return struct;
   }
 }
+
 
 final class _ResultUint32VoidUnion extends ffi.Union {
   @ffi.Uint32()
@@ -509,6 +522,7 @@ final class _ResultUint32Void extends ffi.Struct {
   }
 }
 
+
 final class _ResultUint8VoidUnion extends ffi.Union {
   @ffi.Uint8()
   external int ok;
@@ -536,6 +550,7 @@ final class _ResultUint8Void extends ffi.Struct {
   }
 }
 
+
 final class _ResultVoidMyZstFfi extends ffi.Struct {
   
 
@@ -555,6 +570,7 @@ final class _ResultVoidMyZstFfi extends ffi.Struct {
     return struct;
   }
 }
+
 
 final class _ResultVoidOpaqueUnion extends ffi.Union {
 
@@ -581,6 +597,7 @@ final class _ResultVoidOpaque extends ffi.Struct {
     return struct;
   }
 }
+
 
 final class _SliceBool extends ffi.Struct {
   external ffi.Pointer<ffi.Bool> _data;
@@ -632,6 +649,7 @@ extension on core.List<bool> {
   }
 }
 
+
 final class _SliceDouble extends ffi.Struct {
   external ffi.Pointer<ffi.Double> _data;
 
@@ -679,6 +697,7 @@ extension on core.List<double> {
   }
 }
 
+
 final class _SliceInt16 extends ffi.Struct {
   external ffi.Pointer<ffi.Int16> _data;
 
@@ -725,6 +744,7 @@ extension on core.List<int> {
     return slice;
   }
 }
+
 
 final class _SliceIsize extends ffi.Struct {
   external ffi.Pointer<ffi.IntPtr> _data;
@@ -776,6 +796,7 @@ extension on core.List<int> {
   }
 }
 
+
 final class _SliceSliceUtf8 extends ffi.Struct {
   external ffi.Pointer<_SliceUtf8> _data;
 
@@ -825,6 +846,7 @@ extension on core.List<core.String> {
     return slice;
   }
 }
+
 
 final class _SliceUint16 extends ffi.Struct {
   external ffi.Pointer<ffi.Uint16> _data;
@@ -876,6 +898,7 @@ extension on core.List<int> {
   }
 }
 
+
 final class _SliceUint8 extends ffi.Struct {
   external ffi.Pointer<ffi.Uint8> _data;
 
@@ -925,6 +948,7 @@ extension on core.List<int> {
     return slice;
   }
 }
+
 
 final class _SliceUsize extends ffi.Struct {
   external ffi.Pointer<ffi.Size> _data;
@@ -976,6 +1000,7 @@ extension on core.List<int> {
   }
 }
 
+
 final class _SliceUtf16 extends ffi.Struct {
   external ffi.Pointer<ffi.Uint16> _data;
 
@@ -1022,6 +1047,7 @@ extension on String {
     return slice;
   }
 }
+
 
 final class _SliceUtf8 extends ffi.Struct {
   external ffi.Pointer<ffi.Uint8> _data;
@@ -1071,6 +1097,7 @@ extension on String {
   }
 }
 
+
 final class _Write {
   final ffi.Pointer<ffi.Opaque> _ffi;
 
@@ -1110,4 +1137,4 @@ external ffi.Pointer<ffi.Uint8> _diplomat_buffer_write_get_bytes(ffi.Pointer<ffi
 external void _diplomat_buffer_write_destroy(ffi.Pointer<ffi.Opaque> ptr);
 
 // dart format on
-
+

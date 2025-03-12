@@ -1,0 +1,110 @@
+{# A struct is a POD if it has no lifetime implications #}
+
+namespace {{library_namespace}}.FFI;
+
+using System.Runtime.InteropServices;
+
+{# todo: implement Disposable as well #}
+public struct {{dotnet_name}} {% if comparator_method.is_some() || edges.len() > 0 %} : {% endif %}
+{% if let Some(comparator_method) = comparator_method %}
+    IComparable<{{dotnet_name}}>,
+    IEquatable<{{dotnet_name}}>
+{% endif %}
+{
+    /// Inner type
+    {{ffi_type.visibility}} readonly FFI.{{dotnet_name}} _ffi;
+    
+    {% for edge in edges %}
+    /// Contains references to the objects that need to outlive the lifetime `'{{lifetime.name}}`
+    private Object[] {{edge.dotnet_name}};
+    {% endfor %}
+
+    {% if edges.len() > 0 %}
+    /// <summary>
+    /// Constructs the {{dotnet_name}} using the FFI-passed value
+    /// </summary>
+    ///
+    /// If this struct contains any slices, their lifetime-edge-relevant objects will only
+    /// be constructed here, and can be appended to any relevant lifetime arrays here. <lifetime>AppendArray accepts a list
+    /// of arrays for each lifetime to do so. It accepts multiple lists per lifetime in case the caller needs to tie a lifetime to multiple
+    /// output arrays. `null` is equivalent to an empty list: this lifetime is not being borrowed from.
+    ///
+    /// This method does not handle lifetime relationships: if `'foo: 'bar`, make sure fooAppendArray contains everything barAppendArray does.
+    {{ffi_type.visibility}} {{dotnet_name}}(
+        FFI.{{dotnet_name}} ffi,
+        {% for edge in edges %}
+        {{}}
+    ) {
+        this._ffi = ffi;
+    }
+    {% else %}
+    // This struct contains borrowed fields, so this takes in a list of
+    // "edges" corresponding to where each lifetime's data may have been borrowed from
+    // and passes it down to individual fields containing the borrow.
+    // This method does not attempt to handle any dependencies between lifetimes, the caller
+    // should handle this when constructing edge arrays.
+
+    {% endif }
+
+    {# Constructor #}
+    {% if let Some(constructor) = constructor %}
+    {% if let Some(docs) = constructor.docs %}
+    {% include "docs_snippet.cs.jinja" %}
+    {% endif %}
+    public {{dotnet_name}}(
+        {% for parameter in constructor.parameters %}
+        {{ parameter.type }} {{ parameter.name }},
+        {% endfor %}
+    ): this(FFI.Library.{{constructor.dotnet_name}}) {}
+    {% endif %}
+
+    {# No finalizer in a struct #}
+    {# TODO: Lifetimes, use a GCHandle: https://learn.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.gchandle?view=net-9.0 #}
+
+    {# Implementation Of Interfaces #}
+
+    {% if let Some(comparator_method) = comparator_method %}
+    #region "Comparator"
+
+    public int IComparable.CompareTo({{dotnet_name}} other)
+        => FFI.Library.{{comparator_method.dotnet_name}}(this.ffi, other.ffi);
+
+    public bool IEquatable.Equals({{dotnet_name}} other) {
+        return CompareTo(other) == 0;
+    }
+
+    public static bool operator >  ({{dotnet_name}} lhs, {{dotnet_name}} rhs)
+    {
+       return lhs.CompareTo(rhs) > 0;
+    }
+
+    public static bool operator <  ({{dotnet_name}} lhs, {{dotnet_name}} rhs)
+    {
+       return lhs.CompareTo(rhs) < 0;
+    }
+
+    public static bool operator >=  ({{dotnet_name}} lhs, {{dotnet_name}} rhs)
+    {
+       return lhs.CompareTo(rhs) >= 0;
+    }
+
+    public static bool operator <=  ({{dotnet_name}} lhs, {{dotnet_name}} rhs)
+    {
+       return lhs.CompareTo(rhs) <= 0;
+    }
+    #endregion
+    {% endif %}
+
+    {% if let Some(add_method) = add_method %}
+    public static bool operator + ({{dotnet_name}} lhs, {{dotnet_name}} rhs) => FFI.Library.{{add_method.dotnet_name}}(this.ffi, other.ffi);
+    {% endif %}
+
+    {% if let Some(sub_method) = sub_method %}
+    public static bool operator - ({{dotnet_name}} lhs, {{dotnet_name}} rhs) => FFI.Library.{{sub_method.dotnet_name}}(this.ffi, other.ffi);
+    {% endif %}
+
+
+    {# Method #}
+    
+
+}

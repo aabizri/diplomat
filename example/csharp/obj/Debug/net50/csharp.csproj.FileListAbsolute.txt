@@ -1,0 +1,12 @@
+C:\Users\alexandre\Projects\diplomat\example\csharp\bin\Debug\net50\csharp.deps.json
+C:\Users\alexandre\Projects\diplomat\example\csharp\bin\Debug\net50\csharp.dll
+C:\Users\alexandre\Projects\diplomat\example\csharp\bin\Debug\net50\csharp.pdb
+C:\Users\alexandre\Projects\diplomat\example\csharp\obj\Debug\net50\csharp.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\alexandre\Projects\diplomat\example\csharp\obj\Debug\net50\csharp.AssemblyInfoInputs.cache
+C:\Users\alexandre\Projects\diplomat\example\csharp\obj\Debug\net50\csharp.AssemblyInfo.cs
+C:\Users\alexandre\Projects\diplomat\example\csharp\obj\Debug\net50\csharp.csproj.CoreCompileInputs.cache
+C:\Users\alexandre\Projects\diplomat\example\csharp\obj\Debug\net50\csharp.sourcelink.json
+C:\Users\alexandre\Projects\diplomat\example\csharp\obj\Debug\net50\csharp.dll
+C:\Users\alexandre\Projects\diplomat\example\csharp\obj\Debug\net50\refint\csharp.dll
+C:\Users\alexandre\Projects\diplomat\example\csharp\obj\Debug\net50\csharp.pdb
+C:\Users\alexandre\Projects\diplomat\example\csharp\obj\Debug\net50\ref\csharp.dll
