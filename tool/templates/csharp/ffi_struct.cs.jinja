@@ -1,0 +1,11 @@
+{# FFI Struct implementation. See [wrapped_struct] for the implementation #}
+
+[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+{{ffi_struct.visibility}} unsafe struct {{ffi_struct.dotnet_name}} {
+    {% for member in ffi_struct.members %}
+    {% if let Some(docs) = member.docs %}
+        {% include docs_snippet.cs.jinja %}
+    {% endif %}
+    public {{member.dotnet_type}} {{member.dotnet_name}};
+    {% endfor %}
+}

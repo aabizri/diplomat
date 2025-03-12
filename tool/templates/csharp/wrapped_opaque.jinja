@@ -1,0 +1,77 @@
+namespace {{library_namespace}}.FFI;
+
+using System.Runtime.InteropServices;
+
+public class {{dotnet_name}} :
+    IDisposable,
+{% if let Some(comparator_method) = comparator_method %}
+    IEquatable<{{dotnet_name}}>
+{% endif %}
+{
+    {{ffi_type.visibility}} readonly void* _ffi;
+    private bool disposed = false;
+
+    {{ffi_type.visibility}} {{dotnet_name}}(void* ffi) {
+        this._ffi = ffi;
+    }
+
+    {# Constructor #}
+    {% if let Some(constructor) = constructor %}
+    {% if let Some(docs) = constructor.docs %}
+    {% include "docs_snippet.cs.jinja" %}
+    {% endif %}
+    public {{dotnet_name}}(
+        {% for parameter in constructor.parameters %}
+        {{ parameter.type }} {{ parameter.name }},
+        {% endfor %}
+    ): this(FFI.Library.{{constructor.dotnet_name}}) {}
+    {% endif %}
+
+    {# Dispose #}
+
+    /// Deallocates the allocated opaque
+    /// Implements IDisposable
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        // Prevent finalization code for this object
+        // from executing a second time.
+        GC.SuppressFinalize(this);
+    }
+
+    private virtual void Dispose(bool disposing) {
+        if (this.disposed) {
+            return;
+        }
+
+        FFI.Library.{{destructor_ffi_name}}(this._ffi);
+        this._ffi = null;
+
+        disposed = true;
+    }
+
+    /// This finalizer will run only if the Dispose method
+    /// does not get called.
+    /// It gives your base class the opportunity to finalize.
+    /// Do not provide finalizer in types derived from this class.
+    ~MyResource()
+    {
+        Dispose(disposing: false);
+    }
+
+    {# Finalizer calls the Dispose implementation#}
+    
+    {# TODO: Lifetimes, use a GCHandle:
+    https://learn.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.gchandle?view=net-9.0
+    #}
+
+    {# Implementation Of Interfaces #}
+    {% if let Some(comparator_method) = comparator_method %}
+    public bool Equals({{dotnet_name}} other) {
+        int FFI.Library.{{comparator_method.dotnet_name}}(this.ffi, other.ffi);
+    {% endif %}
+
+    {# Method #}
+    
+
+}

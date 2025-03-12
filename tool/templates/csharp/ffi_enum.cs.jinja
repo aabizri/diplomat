@@ -1,0 +1,17 @@
+{{ffi_enum.visibility}} enum {{ffi_enum.dotnet_name}} :
+{% match ffi_enum.width %}
+    {% when 8 %}
+    byte
+    {% when 16 %}
+    ushort
+    {% when 32 %}
+    uint
+    {% endmatch %}
+{
+    {% for variant in ffi_enum.variants %}
+    {% if let Some(docs) = variant.docs %}
+        {% include "docs_snippet.cs.jinja" %}
+    {% endif %}
+    {{variant.dotnet_name}} = {{variant.value}};
+    {% endfor %}
+}
