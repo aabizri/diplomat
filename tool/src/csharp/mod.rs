@@ -64,10 +64,10 @@ pub(crate) fn run<'cx>(
         //errors.set_context_ty(ty.name().as_str().into());
 
         match ty {
-            crate::hir::TypeDef::Enum(e) => (), /* self.gen_enum(e, id, &name)*/,
-            crate::hir::TypeDef::Opaque(o) => (), /*self.gen_opaque_def(o, id, &name)*/,
+            crate::hir::TypeDef::Enum(e) => (), /* self.gen_enum(e, id, &name)*/
+            crate::hir::TypeDef::Opaque(o) => (), /*self.gen_opaque_def(o, id, &name)*/
             crate::hir::TypeDef::Struct(s) => {}
-            crate::hir::TypeDef::OutStruct(s) => (), /*self.gen_struct_def(s, id, true, &name, false)*/,
+            crate::hir::TypeDef::OutStruct(s) => (), /*self.gen_struct_def(s, id, true, &name, false)*/
             _ => unreachable!("unknown AST/HIR variant"),
         };
 
