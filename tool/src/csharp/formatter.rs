@@ -77,6 +77,8 @@ impl<'tcx> CSharpFormatter<'tcx> {
         self.fmt_function_type(ty)
     }
 
+    /// A function parameter is an identifier
+    /// See https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/method-parameters
     pub fn fmt_function_parameter(&self, ident: &crate::hir::IdentBuf) -> String {
         use heck::ToLowerCamelCase;
         ident.as_str().to_lower_camel_case()
@@ -103,4 +105,112 @@ impl<'tcx> CSharpFormatter<'tcx> {
             PrimitiveType::Bool => "bool",
         }
     }
+
+    pub fn check_identifier(candidate: &str) -> IdentifierCheckResultKind {
+        todo!()
+    }
+
+    /// These are keywords which can never appear as identifiers
+    /// See: https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/
+    const KEYWORDS: &'static [&'static str] = &[
+        "abstract",
+        "as",
+        "base",
+        "bool",
+        "break",
+        "byte",
+        "case",
+        "catch",
+        "char",
+        "checked",
+        "class",
+        "const",
+        "continue",
+        "decimal",
+        "default",
+        "delegate",
+        "do",
+        "double",
+        "else",
+        "enum",
+        "event",
+        "explicit",
+        "extern",
+        "false",
+        "finally",
+        "fixed",
+        "float",
+        "for",
+        "foreach",
+        "goto",
+        "if",
+        "implicit",
+        "in",
+        "int",
+        "interface",
+        "internal",
+        "is",
+        "lock",
+        "long",
+        "namespace",
+        "new",
+        "null",
+        "object",
+        "operator",
+        "out",
+        "override",
+        "params",
+        "private",
+        "protected",
+        "public",
+        "readonly",
+        "ref",
+        "return",
+        "sbyte",
+        "sealed",
+        "short",
+        "sizeof",
+        "stackalloc",
+        "static",
+        "string",
+        "struct",
+        "switch",
+        "this",
+        "throw",
+        "true",
+        "try",
+        "typeof",
+        "uint",
+        "ulong",
+        "unchecked",
+        "unsafe",
+        "ushort",
+        "using",
+        "virtual",
+        "void",
+        "volatile",
+        "while"
+    ];
+}
+
+
+enum IdentifierViolationKind {
+    /// Allowed character violation
+    /// The allowed characters are [A-Z], [a-z], [0-9] & _
+    ForbiddenCharacter,
+    /// The starting character cannot be a digit
+    StartingCharacterIsDigit,
+    /// The identifier contains whitespace
+    HasWhitespace,
+    /// The maximum length of an identifier in C# is 512 characters
+    TooLong,
+    /// The identifier is a keyword
+    IsKeyword,
+    /// Double underscores are reserved
+    ForbiddenDoubleUnderscore
+}
+
+enum IdentifierCheckResultKind {
+    Valid,
+    InvalidCharacters(usize, usize),
 }
