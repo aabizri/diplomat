@@ -367,7 +367,17 @@ category = "Code generation"
 dependencies = ["gen-dart-feature", "gen-dart-example"]
 [tasks.gen-kotlin]
 category = "Code generation"
-dependencies = ["gen-kotlin-feature", "gen-kotlin-example"]
+dependencies = [
+    "gen-kotlin-feature",
+    "gen-kotlin-example",
+]
+
+[tasks.gen-csharp]
+category = "Code generation"
+dependencies = [
+    "gen-csharp-feature",
+    "gen-csharp-example"
+]
 
 
 [tasks.gen-c-feature]
@@ -493,6 +503,25 @@ rm -rf nanobind/src/include
 mv nanobind/src/cpp/include nanobind/src/
 rm -rf nanobind/src/cpp
 '''
+
+[tasks.gen-csharp-feature]
+category = "Code generation"
+script_runner = "@duckscript"
+script = '''
+exit_on_error true
+!include_files ./support/functions.ds
+generate_generic feature_tests csharp src
+'''
+
+[tasks.gen-csharp-example]
+category = "Code generation"
+script_runner = "@duckscript"
+script = '''
+exit_on_error true
+!include_files ./support/functions.ds
+generate_generic example csharp src
+'''
+
 # Build deps
 
 [tasks.build-tool]
