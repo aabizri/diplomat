@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace {{library_namespace}}.FFI;
 
 {% if ffi_function.len() > 0 %}
-internal static unsafe partial class Library
+internal static unsafe sealed class Native{{ffi_type.name}}Methods
 {
     {% for ffi_function in ffi_functions %}
         {% include "ffi_function_declaration.cs.jinja" %}

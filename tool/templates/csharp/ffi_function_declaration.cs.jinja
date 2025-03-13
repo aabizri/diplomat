@@ -20,7 +20,7 @@
         __DllName,
         EntryPoint = "{{method.inner.abi_name}}",
 #if !NET6_0_OR_GREATER
-        CallingConvention = CallingConvention.Cdecl,
+        CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl,
 #endif
         ExactSpelling = true
     )]
