@@ -2,6 +2,8 @@ use diplomat_core::hir::{BackendAttrSupport, OpaqueDef, TypeContext, TypeId};
 mod formatter;
 mod method;
 
+// See https://github.com/rust-diplomat/diplomat/commit/b971915368f81df83e92f843ddb537ce1b21d8f4#diff-73bbb0d6e9ac25d4da58750581ae3c2745875655360c2aa7ca395ccb181b323a for inspiration
+
 fn gen_opaque_def(ctx: &TypeContext, type_id: TypeId, opaque_path: &OpaqueDef) -> String {
     "We'll get to it".into()
 }
