@@ -8,17 +8,17 @@ namespace SomeLib.DiplomatRuntime;
 /// </summary>
 /// <typeparam name="T">type of the slice member</typeparam>
 [StructLayout(LayoutKind.Sequential)]
-internal unsafe struct DiplomatSlice<T> where T : unmanaged
+internal unsafe struct Slice<T> where T : unmanaged
 {
     unsafe public T* Data;
     public nuint Length;
 
-    /// Create a new DiplomatSlice instance at the given pointer and size
+    /// Create a new Slice instance at the given pointer and size
     /// </summary>
     /// <remarks>It is assumed that the span provided is already unmanaged or externally pinned</remarks>
-    public unsafe static DiplomatSlice<T> FromSpan(Span<T> span)
+    public unsafe static Slice<T> FromSpan(Span<T> span)
     {
-        DiplomatSlice<T> slice = new();
+        Slice<T> slice = new();
         fixed (T* ptr = &MemoryMarshal.GetReference(span))
         {
             slice.Data = ptr;
@@ -28,11 +28,11 @@ internal unsafe struct DiplomatSlice<T> where T : unmanaged
     }
 
     // <summary>
-    /// Create a new DiplomatSlice instance at the given pointer and size
+    /// Create a new Slice instance at the given pointer and size
     /// </summary>
-    public unsafe static DiplomatSlice<T> FromUnmanaged(T* pointer, nuint length)
+    public unsafe static Slice<T> FromUnmanaged(T* pointer, nuint length)
     {
-        DiplomatSlice<T> slice = new()
+        Slice<T> slice = new()
         {
             Data = pointer,
             Length = length
@@ -54,15 +54,16 @@ internal unsafe struct DiplomatSlice<T> where T : unmanaged
 }
 
 /// <summary>
-/// A MemoryManager over a DiplomatSlice. See https://stackoverflow.com/questions/52190423/c-sharp-access-unmanaged-array-using-memoryt-or-arraysegmentt
+/// A MemoryManager over a Slice. See https://stackoverflow.com/questions/52190423/c-sharp-access-unmanaged-array-using-memoryt-or-arraysegmentt
 /// </summary>
 /// <remarks>The pointer is assumed to be fully unmanaged, or externally pinned - no attempt will be made to pin this data</remarks>
 internal sealed unsafe class UnmanagedMemoryManager<T> : System.Buffers.MemoryManager<T>
     where T : unmanaged
 {
-    private readonly DiplomatSlice<T> _slice;
+    private readonly Slice<T> _slice;
 
-    public UnmanagedMemoryManager(DiplomatSlice<T> slice) {
+    public UnmanagedMemoryManager(Slice<T> slice)
+    {
         _slice = slice;
     }
 

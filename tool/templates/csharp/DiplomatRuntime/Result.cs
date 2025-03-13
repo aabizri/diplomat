@@ -117,3 +117,29 @@ internal struct DiplomatResultVoidSuccess<E> where E : unmanaged
         };
     }
 }
+
+/// <summary>
+/// FFI-Compatible result type where the success value and error value are both void type
+/// Essentially, this means it only carries the discrimination tag
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+internal struct DiplomatResultVoid
+{
+    public byte isOk;
+
+    public static DiplomatResultVoid Ok()
+    {
+        return new DiplomatResultVoid()
+        {
+            isOk = Convert.ToByte(true)
+        };
+    }
+
+    public static DiplomatResultVoid Err()
+    {
+        return new DiplomatResultVoid()
+        {
+            isOk = Convert.ToByte(false)
+        };
+    }
+}

@@ -3,8 +3,7 @@
 use std::borrow::Cow;
 
 use diplomat_core::hir::{
-    Docs, DocsUrlGenerator, FloatType, Ident, Int128Type, IntSizeType, IntType, PrimitiveType,
-    ReturnType, StructField, StructPathLike, TyPosition, Type, TypeContext, TypeId,
+    Docs, DocsUrlGenerator, FloatType, Ident, Int128Type, IntSizeType, IntType, PrimitiveType, ReturnType, StructField, StructPathLike, SuccessType, TyPosition, Type, TypeContext, TypeId
 };
 use heck::ToLowerCamelCase;
 
@@ -18,17 +17,26 @@ impl<'tcx> CSharpFormatter<'tcx> {
         Self { tcx, docs_url_gen }
     }
 
-    pub fn fmt_type_name(&self, id: TypeId) -> String {
-        let ty = self.tcx.resolve_type(id);
-
-        let base = ty.name().as_str();
-        let renamed = ty.attrs().rename.apply(base.into());
+    pub fn fmt_type_name_from_str(raw: &str) -> String {
 
         // C# uses PascalCase for types (except primitives and the like)
         use heck::ToPascalCase;
-        let cased = renamed.to_pascal_case();
+        let cased = raw.to_pascal_case();
 
         cased
+    }
+
+    pub fn fmt_type_name_from_typedef<'a>(ty: &'a crate::hir::TypeDef<'a>) -> String {
+        let base = ty.name().as_str();
+        let renamed = ty.attrs().rename.apply(base.into());
+
+        Self::fmt_type_name_from_str(&renamed)
+    }
+
+    pub fn fmt_type_name_from_id(&self, id: TypeId) -> String {
+        let ty = self.tcx.resolve_type(id);
+        
+        Self::fmt_type_name_from_typedef(&ty)
     }
 
     pub fn fmt_function_name(&self, ident: &crate::hir::IdentBuf) -> String {
@@ -43,29 +51,74 @@ impl<'tcx> CSharpFormatter<'tcx> {
                     "void".into()
                 } else {
                     match success_type.as_type() {
-                        Some(t) => self.fmt_function_type(t),
+                        Some(t) => self.fmt_inner_type(t),
                         None => unreachable!(),
                     }
                 }
             }
-            ReturnType::Fallible(success_type, error_type) => todo!(),
-            ReturnType::Nullable(success_type) => todo!("implement support for {:?}", success_type),
+            ReturnType::Fallible(_, _) | ReturnType::Nullable(_) => {
+                let (success_type, error_type) = match ty {
+                    ReturnType::Fallible(success_type, error_type) => (success_type, error_type),
+                    ReturnType::Nullable(success_type) => (success_type, &None),
+                    _ => unreachable!()
+                };
+
+                match (success_type, error_type) {
+                    (SuccessType::Unit | SuccessType::Write, None) => "DiplomatRuntime::DiplomatResultVoidVoid".into(),
+                    (SuccessType::Unit | SuccessType::Write, Some(error_type)) => format!("DiplomatRuntime::DiplomatResultVoidSuccess<{}>", self.fmt_inner_type(error_type)).into(),
+                    (SuccessType::OutType(success_type), None) => format!("DiplomatRuntime::DiplomatResultVoidError<{}>", self.fmt_inner_type(success_type)).into(),
+                    (SuccessType::OutType(success_type), Some(error_type)) => format!("DiplomatRuntime::DiplomatResult<{}, {}>", self.fmt_inner_type(success_type), self.fmt_inner_type(error_type)).into(),
+                    _ => unimplemented!("Combination of success_type {:?} and error_type {:?} not supported", success_type, error_type),
+                }
+            },
         }
     }
 
-    pub fn fmt_function_type<T>(&self, ty: &Type<T>) -> Cow<'static, str>
+    pub fn fmt_inner_type<T>(&self, ty: &Type<T>) -> Cow<'static, str>
     where
         T: crate::hir::TyPosition,
     {
         match ty {
             Type::Primitive(primitive_type) => self.fmt_primitive_as_csharp(primitive_type).into(),
-            Type::Opaque(opaque_path) => "MyOpaque".into(),
-            Type::Struct(struct_type) => "MYSTRUCT".into(),
+            Type::Opaque(opaque_path) => {
+                let resolved = opaque_path.resolve(self.tcx);
+                Self::fmt_type_name_from_typedef(&crate::hir::TypeDef::Opaque(resolved)).into()
+            },
+            Type::Struct(struct_type) => {
+                let resolved = self.tcx.resolve_type(struct_type.id());
+                Self::fmt_type_name_from_typedef(&resolved).into()
+            }
             Type::ImplTrait(_) => todo!(),
-            Type::Enum(enum_path) => todo!(),
-            Type::Slice(slice) => "MySlice".into(),
+            Type::Enum(enum_path) => {
+                let resolved = enum_path.resolve(&self.tcx);
+                Self::fmt_type_name_from_typedef(&crate::hir::TypeDef::Enum(resolved)).into()
+            },
+            Type::Slice(slice) => {
+                let inner_type: crate::hir::Type::<crate::hir::Everywhere> = match slice {
+                    crate::hir::Slice::Str(_borrow, crate::hir::StringEncoding::Utf8 | crate::hir::StringEncoding::UnvalidatedUtf8) => {
+                        crate::hir::Type::Primitive(crate::hir::PrimitiveType::Byte)
+                    },
+                    crate::hir::Slice::Str(_borrow, crate::hir::StringEncoding::UnvalidatedUtf16) => {
+                        crate::hir::Type::Primitive(crate::hir::PrimitiveType::Char)
+                    },
+                    crate::hir::Slice::Primitive(_borrow, primitive_type) => {
+                        crate::hir::Type::Primitive(*primitive_type)
+                    },
+                    crate::hir::Slice::Strs(string_encoding) => {
+                        // TODO: check that None is correct here
+                        crate::hir::Type::Slice(crate::hir::Slice::Str(None, *string_encoding))
+                    },
+                    _ => todo!(),
+                };
+
+                let inner_formatted = self.fmt_inner_type(&inner_type);
+                format!("DiplomatRuntime::Slice<{}>", inner_formatted).into()
+            },
             Type::Callback(_) => todo!(),
-            Type::DiplomatOption(_) => todo!(),
+            Type::DiplomatOption(inner_type) => {
+                let inner_formatted = self.fmt_inner_type(&inner_type);
+                format!("DiplomatRuntime::DiplomatResultVoidError<{}>", inner_formatted).into()
+            },
             _ => todo!(),
         }
     }
@@ -74,7 +127,7 @@ impl<'tcx> CSharpFormatter<'tcx> {
         &self,
         ty: &Type<crate::hir::InputOnly>,
     ) -> Cow<'static, str> {
-        self.fmt_function_type(ty)
+        self.fmt_inner_type(ty)
     }
 
     /// A function parameter is an identifier

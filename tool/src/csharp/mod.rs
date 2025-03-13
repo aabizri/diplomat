@@ -47,7 +47,7 @@ pub(crate) fn run<'cx>(
     docs_url_gen: &'cx diplomat_core::hir::DocsUrlGenerator,
 ) -> (crate::FileMap, crate::ErrorStore<'cx, String>) {
     let files = crate::FileMap::default();
-    //let errors = crate::ErrorStore::default();
+    let errors = crate::ErrorStore::default();
 
     let formatter = formatter::CSharpFormatter::new(tcx, docs_url_gen);
 
@@ -56,12 +56,12 @@ pub(crate) fn run<'cx>(
             continue;
         }
 
-        let type_name = formatter.fmt_type_name(id);
+        let type_name = formatter.fmt_type_name_from_id(id);
         let file_name = format!("{type_name}.cs");
         println!("type_name: {type_name} in file {file_name}");
         // Do something
 
-        //errors.set_context_ty(ty.name().as_str().into());
+        errors.set_context_ty(ty.name().as_str().into());
 
         match ty {
             crate::hir::TypeDef::Enum(e) => (), /* self.gen_enum(e, id, &name)*/
@@ -80,7 +80,7 @@ pub(crate) fn run<'cx>(
             .for_each(|me| println!("{}", me.generate_function_declaration()));
     }
 
-    unimplemented!()
+    (files, errors)
 }
 
 #[cfg(test)]
