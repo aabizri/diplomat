@@ -70,7 +70,7 @@ external _MyStructContainingAnOptionFfi _MyStructContainingAnOption_new();
 @_DiplomatFfiUse('MyStructContainingAnOption_filled')
 @ffi.Native<_MyStructContainingAnOptionFfi Function()>(isLeaf: true, symbol: 'MyStructContainingAnOption_filled')
 // ignore: non_constant_identifier_names
-external _MyStructContainingAnOptionFfi _MyStructContainingAnOption_filled();
+external _MyStructContainingAnOptionFfi _MyStructContainingAnOption_filled();
 
 // dart format on
 
